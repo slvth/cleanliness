@@ -2,15 +2,20 @@ import 'package:flutter/material.dart';
 
 class HorizontalListView extends StatefulWidget {
   final List<String> items;
-
-  const HorizontalListView({super.key, required this.items});
+  final Function(String)? onItemSelected;
+  final int selectIndex;
+  const HorizontalListView({
+    super.key,
+    required this.items,
+    this.onItemSelected, required this.selectIndex,
+  });
 
   @override
   _HorizontalListViewState createState() => _HorizontalListViewState();
 }
 
 class _HorizontalListViewState extends State<HorizontalListView> {
-  int _indexSelect = 0;
+  int _indexSelect = -1;
 
   @override
   Widget build(BuildContext context) {
@@ -25,12 +30,15 @@ class _HorizontalListViewState extends State<HorizontalListView> {
             setState(() {
               _indexSelect = i;
             });
+            if (widget.onItemSelected != null) {
+              widget.onItemSelected!(widget.items[i]);
+            }
           },
           child: Card(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
             ),
-            color: _indexSelect == i ? Colors.black : Colors.grey, // Изменение цвета в зависимости от выбранного элемента
+            color: (_indexSelect == i && _indexSelect != -1  && widget.selectIndex!=-1) ? Colors.black : Colors.grey, // Изменение цвета в зависимости от выбранного элемента
             child: SizedBox(
               width: 100,
               child: Center(
@@ -52,3 +60,4 @@ class _HorizontalListViewState extends State<HorizontalListView> {
     );
   }
 }
+

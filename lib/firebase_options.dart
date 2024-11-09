@@ -41,48 +41,49 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAxpv1I4C18O5OHlwuUTc1movYMCcM2y_Y',
-    appId: '1:854233612502:web:c270d487298db787728977',
-    messagingSenderId: '854233612502',
-    projectId: 'cleanlinesscampusapp-c7934',
-    authDomain: 'cleanlinesscampusapp-c7934.firebaseapp.com',
-    storageBucket: 'cleanlinesscampusapp-c7934.firebasestorage.app',
-    measurementId: 'G-QDYW51BJ4Q',
+    apiKey: 'AIzaSyD6H_bOB6vykbKtHRPLdKeYo41zlPNSHQQ',
+    appId: '1:306013145528:web:6faa770805c9244155674d',
+    messagingSenderId: '306013145528',
+    projectId: 'cleanlinesscampusapp-8709a',
+    authDomain: 'cleanlinesscampusapp-8709a.firebaseapp.com',
+    storageBucket: 'cleanlinesscampusapp-8709a.firebasestorage.app',
+    measurementId: 'G-CWE9MTD21D',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBDaCu7HZ7jxiYC7qUZuAA6aJjE2bZrOOg',
-    appId: '1:854233612502:android:e0a756e10857070c728977',
-    messagingSenderId: '854233612502',
-    projectId: 'cleanlinesscampusapp-c7934',
-    storageBucket: 'cleanlinesscampusapp-c7934.firebasestorage.app',
+    apiKey: 'AIzaSyCv30heXPAexMnfNs3YXhopn54WzuVXS3c',
+    appId: '1:306013145528:android:25cf285e2b0a060b55674d',
+    messagingSenderId: '306013145528',
+    projectId: 'cleanlinesscampusapp-8709a',
+    storageBucket: 'cleanlinesscampusapp-8709a.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCCxx0zO-bkX6xMGITILxnUxZ40Fkh5niI',
-    appId: '1:854233612502:ios:ea7726cb3f917224728977',
-    messagingSenderId: '854233612502',
-    projectId: 'cleanlinesscampusapp-c7934',
-    storageBucket: 'cleanlinesscampusapp-c7934.firebasestorage.app',
+    apiKey: 'AIzaSyByMnxeUVol7-7GwwOtpPLqx809EhmMkFI',
+    appId: '1:306013145528:ios:177f8a1e5a95e30f55674d',
+    messagingSenderId: '306013145528',
+    projectId: 'cleanlinesscampusapp-8709a',
+    storageBucket: 'cleanlinesscampusapp-8709a.firebasestorage.app',
     iosBundleId: 'com.example.cleanlinessCampusApp',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCCxx0zO-bkX6xMGITILxnUxZ40Fkh5niI',
-    appId: '1:854233612502:ios:ea7726cb3f917224728977',
-    messagingSenderId: '854233612502',
-    projectId: 'cleanlinesscampusapp-c7934',
-    storageBucket: 'cleanlinesscampusapp-c7934.firebasestorage.app',
+    apiKey: 'AIzaSyByMnxeUVol7-7GwwOtpPLqx809EhmMkFI',
+    appId: '1:306013145528:ios:177f8a1e5a95e30f55674d',
+    messagingSenderId: '306013145528',
+    projectId: 'cleanlinesscampusapp-8709a',
+    storageBucket: 'cleanlinesscampusapp-8709a.firebasestorage.app',
     iosBundleId: 'com.example.cleanlinessCampusApp',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyAxpv1I4C18O5OHlwuUTc1movYMCcM2y_Y',
-    appId: '1:854233612502:web:08eb21145e1dc99b728977',
-    messagingSenderId: '854233612502',
-    projectId: 'cleanlinesscampusapp-c7934',
-    authDomain: 'cleanlinesscampusapp-c7934.firebaseapp.com',
-    storageBucket: 'cleanlinesscampusapp-c7934.firebasestorage.app',
-    measurementId: 'G-HLX6D7VWBV',
+    apiKey: 'AIzaSyD6H_bOB6vykbKtHRPLdKeYo41zlPNSHQQ',
+    appId: '1:306013145528:web:c66c25f37d1ccfaa55674d',
+    messagingSenderId: '306013145528',
+    projectId: 'cleanlinesscampusapp-8709a',
+    authDomain: 'cleanlinesscampusapp-8709a.firebaseapp.com',
+    storageBucket: 'cleanlinesscampusapp-8709a.firebasestorage.app',
+    measurementId: 'G-7KB735SYS4',
   );
+
 }

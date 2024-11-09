@@ -1,7 +1,10 @@
 import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
+import '../../../repositories/firebase/BookingService.dart';
+import '../../../repositories/models/models.dart';
 import '../widgets/widgets.dart';
 
 @RoutePage()
@@ -15,6 +18,32 @@ class RecordScreen extends StatefulWidget {
 class _RecordScreenState extends State<RecordScreen> {
   //state
   int _currentValueRadio = 1;
+  String? _selectedDate;
+  String? _selectedTime;
+  int _selectedTimeIndex = -1; // Добавляем переменную для хранения выбранного индекса времени
+  final BookingService _bookingService = BookingService();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  List<String> _availableTimes = ['14:00', '15:00', '16:00'];
+  bool resetTime = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _updateAvailableTimes();
+  }
+
+  void _updateAvailableTimes() async {
+    if (_selectedDate != null) {
+      List<BookingModel> occupiedSlots = await _bookingService.getOccupiedSlots(_selectedDate!);
+      List<String> occupiedTimes = occupiedSlots.map((booking) => booking.time).toList();
+      setState(() {
+        _selectedTime = null;
+        _selectedTimeIndex = -1; // Сбрасываем выбранный индекс времени
+        _availableTimes = ['14:00', '15:00', '16:00'];
+        _availableTimes = _availableTimes.where((time) => !occupiedTimes.contains(time)).toList();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,12 +63,32 @@ class _RecordScreenState extends State<RecordScreen> {
               const Text('Выберите дату:'),
               SizedBox(
                 height: 100,
-                child: HorizontalListView(items:_datesToString),
+                child: HorizontalListView(
+                  items: _datesToString,
+                  selectIndex: -2,
+                  onItemSelected: (date) {
+                    setState(() {
+                      _selectedTime = null;
+                      _selectedTimeIndex = -1; // Сбрасываем выбранный индекс времени
+                      _selectedDate = date;
+                      _updateAvailableTimes();
+                    });
+                  },
+                ),
               ),
               const Text('Выберите время:'),
-              const SizedBox(
+              SizedBox(
                 height: 50,
-                child: HorizontalListView(items: ['14:00', '15:00', '16:00']),
+                child: HorizontalListView(
+                  items: _availableTimes,
+                  selectIndex: _selectedTimeIndex,
+                  onItemSelected: (time) {
+                    setState(() {
+                      _selectedTime = time;
+                      _selectedTimeIndex = _availableTimes.indexOf(time); // Сохраняем выбранный индекс времени
+                    });
+                  },
+                ),
               ),
               const Text('Количество стиральных машин:'),
               Column(
@@ -73,7 +122,22 @@ class _RecordScreenState extends State<RecordScreen> {
                 padding: const EdgeInsets.all(20),
                 child: Center(
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      if (_selectedDate != null && _selectedTime != null) {
+                        BookingModel booking = BookingModel(
+                          userId: _auth.currentUser!.uid,
+                          date: _selectedDate!,
+                          time: _selectedTime!,
+                          countMachine: _currentValueRadio,
+                        );
+                        _bookingService.createBooking(booking);
+                        Navigator.pop(context);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Пожалуйста, выберите дату и время')),
+                        );
+                      }
+                    },
                     child: const Text('Забронировать', style: TextStyle(color: Colors.black, fontSize: 18),),
                   ),
                 ),
@@ -82,9 +146,8 @@ class _RecordScreenState extends State<RecordScreen> {
           ),
         ));
   }
+
 }
-
-
 
 List<String> datesToString(List<DateTime> dates) {
   List<String> ans = [];

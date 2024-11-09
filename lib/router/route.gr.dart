@@ -23,7 +23,7 @@ class RecordListRoute extends PageRouteInfo<void> {
   static PageInfo page = PageInfo(
     name,
     builder: (data) {
-      return const RecordListScreen();
+      return  RecordListScreen();
     },
   );
 }

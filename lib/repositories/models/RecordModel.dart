@@ -7,5 +7,7 @@ class RecordModel{
   final StudentModel user;
 
   RecordModel({required this.date, required this.time, required this.countMachine, required this.user});
+
+
 }
 
