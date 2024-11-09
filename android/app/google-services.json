@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "854233612502",
+    "project_id": "cleanlinesscampusapp-c7934",
+    "storage_bucket": "cleanlinesscampusapp-c7934.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:854233612502:android:e0a756e10857070c728977",
+        "android_client_info": {
+          "package_name": "com.cleanliness.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDaCu7HZ7jxiYC7qUZuAA6aJjE2bZrOOg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
