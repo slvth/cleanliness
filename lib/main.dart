@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cleanliness_campus_app/cleanliness_app.dart';
 import 'package:cleanliness_campus_app/repositories/firebase/AuthService.dart';
 import 'package:cleanliness_campus_app/theme/theme.dart';
@@ -9,17 +11,23 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'firebase_options.dart';
 import 'router/route.dart';
 
-void main() async {
+void main()  {
   WidgetsFlutterBinding.ensureInitialized();
-  final app = await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform);
-  initializeDateFormatting('ru', null);
+  runZonedGuarded(() async{
+    final app = await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform);
+    initializeDateFormatting('ru', null);
 
-  AuthService _authService = AuthService();
-  String email = "user@user.ru";
-  String password = "123456";
-  _authService.signIn(email, password);
+    AuthService _authService = AuthService();
+    String email = "user@user.ru";
+    String password = "123456";
+    _authService.signIn(email, password);
 
 
-  runApp( CleanlinessApp());
+    runApp( CleanlinessApp());
+  }, (e, st){
+    print(e);
+  });
+
+
 }
