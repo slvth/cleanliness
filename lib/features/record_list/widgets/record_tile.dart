@@ -1,5 +1,4 @@
-import 'package:cleanliness_campus_app/repositories/firebase/AuthService.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 
 import '../../../repositories/models/models.dart';
@@ -7,20 +6,22 @@ import '../../../repositories/models/models.dart';
 class RecordTile extends StatefulWidget {
   final BookingModel booking;
   final UserModel? user;
+  final VoidCallback onCancel;
 
-  RecordTile({super.key, required this.booking, required this.user});
+  RecordTile({
+    super.key,
+    required this.booking,
+    required this.user,
+    required this.onCancel,
+  });
 
   @override
   State<RecordTile> createState() => _RecordTileState();
 }
 
 class _RecordTileState extends State<RecordTile> {
-
-
-
   @override
-  void initState()  {
-
+  void initState() {
     super.initState();
   }
 
@@ -32,11 +33,9 @@ class _RecordTileState extends State<RecordTile> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Дата: ${widget.booking.date}',
-              style:
-                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
           Text('Время: ${widget.booking.time}',
-              style:
-                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         ],
       ),
       subtitle: Column(
@@ -52,7 +51,7 @@ class _RecordTileState extends State<RecordTile> {
       ),
       trailing: IconButton(
         icon: const Icon(Icons.delete_forever_rounded, size: 30),
-        onPressed: () {},
+        onPressed: widget.onCancel,
       ),
     );
   }

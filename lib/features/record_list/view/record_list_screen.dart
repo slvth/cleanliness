@@ -14,91 +14,76 @@ class RecordListScreen extends StatefulWidget {
   _RecordListScreenState createState() => _RecordListScreenState();
 }
 
-class _RecordListScreenState extends State<RecordListScreen>  with RouteAware{
+class _RecordListScreenState extends State<RecordListScreen> with RouteAware {
   final BookingService _bookingService = BookingService();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   List<BookingModel> bookingList = [];
   List<UserModel> userList = [];
+  String? userId;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
 
 
   @override
   Widget build(BuildContext context) {
-
     AuthService _authService = AuthService();
     String? userId = _authService.getCurrentUserId();
     return Scaffold(
       appBar: AppBar(title: Text('Мои бронирования')),
-      body: Expanded(
-        child: StreamBuilder<QuerySnapshot>(
-          stream: _bookingService.getUserBookings(userId!),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            }
-
-            if (snapshot.hasError) {
-              return Center(child: Text('Ошибка: ${snapshot.error}'));
-            }
-
-            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              return Center(child: Text('Нет бронирований'));
-            }
-            List<DocumentSnapshot> documents = snapshot.data!.docs;
-
-            /*AuthService authService = AuthService();
-            if(bookingList.length == documents.length){
-
-              return ListView.builder(
-                  itemCount: bookingList.length,
-                  itemBuilder: (context, index) {
-
-                    /*BookingModel booking = BookingModel.fromMap(documents[index].data() as Map<String, dynamic>);
-                AuthService authService = AuthService();
-                UserModel? user;
-                authService.getUserData(booking.userId).then((value){
-                  user = value!;
-                });*/
-                    BookingModel booking = bookingList[index];
-                    UserModel user = userList[index];
-                    return RecordTile(booking: booking, user: user);
-
-
-                  });
-            }
-            else{
-              for (var item in documents) {
-                BookingModel booking = BookingModel.fromMap(
-                    item.data() as Map<String, dynamic>);
-                UserModel user;
-                authService.getUserData(booking.userId).then((value){
-                  userList.add(value!);
-                  bookingList.add(booking);
-                });
-              }
-            }
-            return const Center(child: CircularProgressIndicator());*/
-
-            return ListView.builder(
-                itemCount: documents.length,
-                itemBuilder: (context, index) {
-
-                  BookingModel booking = BookingModel.fromMap(documents[index].data() as Map<String, dynamic>);
-                AuthService authService = AuthService();
-                UserModel? user;
-                authService.getUserData(booking.userId).then((value){
-                  user = value!;
-                });
-                  return ListTile(
-                    title: Text(booking.date),
-                    subtitle: Text(booking.time),
-                    trailing: IconButton(
-                      icon: Icon(Icons.cancel),
-                      onPressed: () => _bookingService.cancelBooking(documents[index].id),
-                    ),
-                  );
-                });
+      body: userId == null
+          ? Center(child: CircularProgressIndicator())
+          : StreamBuilder<QuerySnapshot>(
+        stream: _bookingService.getUserBookings(userId),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
           }
-        ),
+          if (snapshot.hasError) {
+            return Center(child: Text('Ошибка: ${snapshot.error}'));
+          }
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return Center(child: Text('Нет бронирований'));
+          }
+          List<DocumentSnapshot> documents = snapshot.data!.docs;
+          return ListView.builder(
+            itemCount: documents.length,
+            itemBuilder: (context, index) {
+              BookingModel booking = BookingModel.fromMap(documents[index].data() as Map<String, dynamic>);
+              return FutureBuilder<UserModel>(
+                future: fetchUser(booking.userId),
+                builder: (context, userSnapshot) {
+                  if (userSnapshot.connectionState == ConnectionState.waiting) {
+                    return ListTile(
+                      leading: CircularProgressIndicator(),
+                      title: Text('Загрузка пользователя...'),
+                    );
+                  } else if (userSnapshot.hasError) {
+                    return ListTile(
+                      title: Text('Ошибка: ${userSnapshot.error}'),
+                    );
+                  } else if (!userSnapshot.hasData) {
+                    return ListTile(
+                      title: Text('Пользователь не найден.'),
+                    );
+                  } else {
+                    UserModel user = userSnapshot.data!;
+                    return RecordTile(
+                      booking: booking,
+                      user: user,
+                      onCancel: () {
+                        _bookingService.cancelBooking(documents[index].id);
+                      },
+                    );
+                  }
+                },
+              );
+            },
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -107,5 +92,10 @@ class _RecordListScreenState extends State<RecordListScreen>  with RouteAware{
         child: Icon(Icons.add),
       ),
     );
+  }
+
+  Future<UserModel> fetchUser(String userId) async {
+    DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    return UserModel.fromFirestore(userDoc);
   }
 }

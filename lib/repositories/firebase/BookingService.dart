@@ -30,6 +30,32 @@ class BookingService {
         .snapshots();
   }
 
+  //
+  Stream<List<DocumentSnapshot>> getAllUniqueBookings() {
+    return _firestore.collection('bookings')
+        .orderBy('date', descending: false)
+        .orderBy('time', descending: false)
+        .snapshots()
+        .map((snapshot) {
+      // Используем Set для хранения уникальных бронирований
+      Set<String> uniqueKeys = Set();
+      List<DocumentSnapshot> uniqueBookings = [];
+
+      for (var doc in snapshot.docs) {
+        String key = '${doc['date']}_${doc['time']}';
+        if (!uniqueKeys.contains(key)) {
+          uniqueKeys.add(key);
+          uniqueBookings.add(doc);
+        }
+      }
+
+      return uniqueBookings;
+    });
+  }
+
+
+
+
   // Получение занятых дат и времени
   Future<List<BookingModel>> getOccupiedSlots(String date) async {
     QuerySnapshot querySnapshot = await _firestore.collection('bookings')

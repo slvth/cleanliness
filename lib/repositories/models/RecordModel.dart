@@ -5,8 +5,7 @@ class RecordModel{
   final String time;
   final int countMachine;
   final UserModel user;
-
-  RecordModel({required this.date, required this.time, required this.countMachine, required this.user});
+  RecordModel(this.countMachine, this.user, {required this.date, required this.time});
 
 }
 

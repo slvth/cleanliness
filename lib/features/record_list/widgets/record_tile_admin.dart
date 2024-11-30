@@ -18,14 +18,6 @@ class RecordTile extends StatelessWidget {
           Text('Время: ${record.time}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         ],
       ),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Корпус: ${record.user.numberHouse}', style: TextStyle(fontSize: 14),),
-          Text('Комната: ${record.user.numberRoom}', style: TextStyle(fontSize: 14),),
-          Text('Кол-во машин: ${record.countMachine}', style: TextStyle(fontSize: 14),),
-        ],
-      ),
       //trailing: Icon(Icons.arrow_forward),
     );
   }

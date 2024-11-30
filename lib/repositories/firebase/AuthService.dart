@@ -29,8 +29,11 @@ class AuthService {
       UserCredential result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       return result.user;
+    } on FirebaseAuthException catch (e) {
+      print('FirebaseAuthException: ${e.code}');
+      return null;
     } catch (e) {
-      print(e.toString());
+      print('Unexpected error: ${e.toString()}');
       return null;
     }
   }
@@ -47,10 +50,28 @@ class AuthService {
   // Сохранение данных пользователя в Firestore
   Future<void> saveUserData(UserModel user) async {
     try {
+      final fes = getCurrentUserId();
       await _firestore.collection('users').doc(getCurrentUserId()).set({
         'lastName': user.lastName,
         'firstName': user.firstName,
-        'numberPhone': user.numberPhone,
+        'email': user.email,
+        'password': user.password,
+        'numberHouse': user.numberHouse,
+        'numberRoom': user.numberRoom,
+        'isAdmin': user.isAdmin,
+      });
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  Future<void> updateUserData(UserModel user) async {
+    try {
+      final fes = getCurrentUserId();
+      await _firestore.collection('users').doc(getCurrentUserId()).update({
+        'lastName': user.lastName,
+        'firstName': user.firstName,
+        'email': user.email,
         'password': user.password,
         'numberHouse': user.numberHouse,
         'numberRoom': user.numberRoom,
@@ -70,7 +91,7 @@ class AuthService {
         return UserModel(
           data['lastName'],
           data['firstName'],
-          data['numberPhone'],
+          data['email'],
           data['password'],
           data['numberHouse'],
           data['numberRoom'],

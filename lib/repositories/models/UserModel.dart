@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserModel{
   //Фамилия
   final String lastName;
@@ -6,7 +8,7 @@ class UserModel{
   final String firstName; //Имя
 
   //Номер телефона
-  final String numberPhone;
+  final String? email;
 
   //Пароль
   final String password;
@@ -15,11 +17,23 @@ class UserModel{
   final int numberHouse;
 
   //Номер комнаты
-  final int? numberRoom;
+  final int numberRoom;
 
   bool isAdmin = false;
 
-  UserModel(this.lastName, this.firstName, this.numberPhone, this.password, this.numberHouse, this.numberRoom, {this.isAdmin=false});
+  UserModel(this.lastName, this.firstName, this.email, this.password, this.numberHouse, this.numberRoom, {this.isAdmin=false});
+
+  factory UserModel.fromFirestore(DocumentSnapshot doc) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    return UserModel(
+      data['lastName'],
+      data['firstName'],
+      data['email'],
+      data['password'],
+      data['numberHouse'],
+        data['numberRoom']
+    );
+  }
 }
 
 /*
