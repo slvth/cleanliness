@@ -1,3 +1,4 @@
+import 'package:auto_route/annotations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,6 +10,7 @@ import '../../../repositories/models/models.dart';
 import '../../record/view/record_screen.dart';
 import '../widgets/widgets.dart';
 
+@RoutePage()
 class RecordListScreen extends StatefulWidget {
   @override
   _RecordListScreenState createState() => _RecordListScreenState();

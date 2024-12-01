@@ -2,6 +2,7 @@ import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../repositories/firebase/BookingService.dart';
 import '../../../repositories/models/models.dart';
@@ -25,16 +26,32 @@ class _RecordScreenState extends State<RecordScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   List<String> _availableTimes = ['14:00', '15:00', '16:00'];
   bool resetTime = false;
+  int? _userFloor;
+  int? _userHouse;
 
   @override
   void initState() {
     super.initState();
-    _updateAvailableTimes();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      if (userDoc.exists) {
+        setState(() {
+          _userHouse = userDoc['numberHouse'];
+          _userFloor = int.parse(userDoc['numberRoom'].toString()[0]);
+        });
+        _updateAvailableTimes();
+      }
+    }
   }
 
   void _updateAvailableTimes() async {
-    if (_selectedDate != null) {
-      List<BookingModel> occupiedSlots = await _bookingService.getOccupiedSlots(_selectedDate!);
+    if (_selectedDate != null && _userHouse != null && _userFloor != null) {
+      List<BookingModel> occupiedSlots = await _bookingService.getOccupiedSlots(_selectedDate!, _userHouse!, _userFloor!);
       List<String> occupiedTimes = occupiedSlots.map((booking) => booking.time).toList();
       setState(() {
         _selectedTime = null;
@@ -146,7 +163,6 @@ class _RecordScreenState extends State<RecordScreen> {
           ),
         ));
   }
-
 }
 
 List<String> datesToString(List<DateTime> dates) {
