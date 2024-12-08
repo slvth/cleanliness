@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 class RecordListDetailScreen extends StatefulWidget {
   final String date;
   final String time;
-  const RecordListDetailScreen({super.key, required this.date, required this.time});
+  const RecordListDetailScreen(
+      {super.key, required this.date, required this.time});
 
   @override
   State<RecordListDetailScreen> createState() => _RecordListDetailScreenState();
@@ -26,7 +27,8 @@ class _RecordListDetailScreenState extends State<RecordListDetailScreen> {
 
     for (var bookingDoc in bookingSnapshot.docs) {
       String userId = bookingDoc['userId'];
-      DocumentSnapshot userDoc = await _firestore.collection('users').doc(userId).get();
+      DocumentSnapshot userDoc =
+          await _firestore.collection('users').doc(userId).get();
 
       if (userDoc.exists) {
         int floor = int.parse(userDoc['numberRoom'].toString()[0]);
@@ -37,7 +39,15 @@ class _RecordListDetailScreenState extends State<RecordListDetailScreen> {
       }
     }
 
-    return bookingsByFloor;
+    // Создаем новый словарь с отсортированными ключами
+    Map<int, List<DocumentSnapshot>> sortedBookingsByFloor = {};
+    List<int> sortedFloors = bookingsByFloor.keys.toList()..sort();
+
+    for (var floor in sortedFloors) {
+      sortedBookingsByFloor[floor] = bookingsByFloor[floor]!;
+    }
+
+    return sortedBookingsByFloor;
   }
 
   @override
@@ -76,7 +86,8 @@ class _RecordListDetailScreenState extends State<RecordListDetailScreen> {
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
                       'Этаж $floor',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ),
                   ListView.builder(
@@ -87,9 +98,11 @@ class _RecordListDetailScreenState extends State<RecordListDetailScreen> {
                       DocumentSnapshot booking = bookings[index];
                       String userId = booking['userId'];
                       return FutureBuilder<DocumentSnapshot>(
-                        future: _firestore.collection('users').doc(userId).get(),
+                        future:
+                            _firestore.collection('users').doc(userId).get(),
                         builder: (context, userSnapshot) {
-                          if (userSnapshot.connectionState == ConnectionState.waiting) {
+                          if (userSnapshot.connectionState ==
+                              ConnectionState.waiting) {
                             return ListTile(
                               title: Text('Загрузка...'),
                             );
@@ -101,14 +114,16 @@ class _RecordListDetailScreenState extends State<RecordListDetailScreen> {
                             );
                           }
 
-                          if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+                          if (!userSnapshot.hasData ||
+                              !userSnapshot.data!.exists) {
                             return ListTile(
                               title: Text('Пользователь не найден'),
                             );
                           }
 
                           DocumentSnapshot userDoc = userSnapshot.data!;
-                          String fullName = '${userDoc['firstName']} ${userDoc['lastName']}';
+                          String fullName =
+                              '${userDoc['firstName']} ${userDoc['lastName']}';
                           String roomNumber = userDoc['numberRoom'].toString();
 
                           return ListTile(

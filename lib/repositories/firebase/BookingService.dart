@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 
 import '../models/models.dart';
 
@@ -14,8 +16,15 @@ class BookingService {
 
   // Получение бронирований пользователя
   Stream<QuerySnapshot> getUserBookings(String userId) {
-    return _firestore.collection('bookings')
+    final now = DateTime.now();
+    final currentDate = DateFormat('dd MMMM').format(now);
+
+    return _firestore
+        .collection('bookings')
         .where('userId', isEqualTo: userId)
+        .where('date', isGreaterThanOrEqualTo: currentDate) // Фильтруем по дате
+        .orderBy('date') // Сортировка по полю 'date'
+        .orderBy('time') // Сортировка по полю 'time'
         .snapshots();
   }
 
@@ -26,7 +35,9 @@ class BookingService {
 
   // Получение всех бронирований для админа
   Stream<QuerySnapshot> getAllBookings() {
-    return _firestore.collection('bookings')
+    return _firestore
+        .collection('bookings')
+        .where('date', isGreaterThanOrEqualTo: DateTime.now())
         .orderBy('date', descending: false)
         .orderBy('time', descending: false)
         .snapshots();
@@ -34,7 +45,8 @@ class BookingService {
 
   //
   Stream<List<DocumentSnapshot>> getAllUniqueBookings() {
-    return _firestore.collection('bookings')
+    return _firestore
+        .collection('bookings')
         .orderBy('date', descending: false)
         .orderBy('time', descending: false)
         .snapshots()
@@ -55,14 +67,22 @@ class BookingService {
     });
   }
 
-
   Stream<List<DocumentSnapshot>> getAllBookings2() {
-    return _firestore.collection('bookings')
+    final now = DateTime.now();
+    final currentDate = DateFormat('dd MMMM', 'ru').format(now);
+
+    // Устанавливаем локаль на русский язык
+    initializeDateFormatting('ru', null);
+
+    return _firestore
+        .collection('bookings')
+        .where('date', isGreaterThanOrEqualTo: currentDate)
         .orderBy('date', descending: false)
         .orderBy('time', descending: false)
         .snapshots()
         .transform(StreamTransformer.fromHandlers(
-      handleData: (QuerySnapshot snapshot, EventSink<List<DocumentSnapshot>> sink) {
+      handleData:
+          (QuerySnapshot snapshot, EventSink<List<DocumentSnapshot>> sink) {
         // Создаем множество для хранения уникальных пар date и time
         Set<String> uniqueDatesTimes = {};
         List<DocumentSnapshot> uniqueDocuments = [];
@@ -77,10 +97,18 @@ class BookingService {
 
         // Сортируем список уникальных документов по полю date и time
         uniqueDocuments.sort((a, b) {
-          int dateComparison = a['date'].compareTo(b['date']);
+          // Преобразуем строки дат в объекты DateTime с учетом текущего года
+          DateTime dateA =
+              DateFormat('dd MMMM', 'ru').parse('${a['date']} ${now.year}');
+          DateTime dateB =
+              DateFormat('dd MMMM', 'ru').parse('${b['date']} ${now.year}');
+
+          int dateComparison = dateA.compareTo(dateB);
           if (dateComparison != 0) {
             return dateComparison;
           }
+
+          // Сравниваем время, если даты равны
           return a['time'].compareTo(b['time']);
         });
 
@@ -90,10 +118,8 @@ class BookingService {
     ));
   }
 
-
-
   // Получение занятых дат и времени
- /* Future<List<BookingModel>> getOccupiedSlots(String date) async {
+  /* Future<List<BookingModel>> getOccupiedSlots(String date) async {
     QuerySnapshot querySnapshot = await _firestore.collection('bookings')
         .where('date', isEqualTo: date)
         .get();
@@ -102,18 +128,22 @@ class BookingService {
   }
 */
 
-  Future<List<BookingModel>> getOccupiedSlots(String date, int house, int floor) async {
+  Future<List<BookingModel>> getOccupiedSlots(
+      String date, int house, int floor) async {
     QuerySnapshot querySnapshot = await _firestore
         .collection('bookings')
         .where('date', isEqualTo: date)
         .get();
 
-    List<BookingModel> bookings = querySnapshot.docs.map((doc) => BookingModel.fromFirestore(doc)).toList();
+    List<BookingModel> bookings = querySnapshot.docs
+        .map((doc) => BookingModel.fromFirestore(doc))
+        .toList();
 
     // Фильтруем бронирования по корпусу и этажу
     List<BookingModel> filteredBookings = [];
     for (var booking in bookings) {
-      DocumentSnapshot userDoc = await _firestore.collection('users').doc(booking.userId).get();
+      DocumentSnapshot userDoc =
+          await _firestore.collection('users').doc(booking.userId).get();
       if (userDoc.exists) {
         int bookingHouse = userDoc['numberHouse'];
         int bookingFloor = int.parse(userDoc['numberRoom'].toString()[0]);
@@ -125,5 +155,4 @@ class BookingService {
 
     return filteredBookings;
   }
-
 }

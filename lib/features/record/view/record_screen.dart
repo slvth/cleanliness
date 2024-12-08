@@ -21,7 +21,8 @@ class _RecordScreenState extends State<RecordScreen> {
   int _currentValueRadio = 1;
   String? _selectedDate;
   String? _selectedTime;
-  int _selectedTimeIndex = -1; // Добавляем переменную для хранения выбранного индекса времени
+  int _selectedTimeIndex =
+      -1; // Добавляем переменную для хранения выбранного индекса времени
   final BookingService _bookingService = BookingService();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   List<String> _availableTimes = ['14:00', '15:00', '16:00'];
@@ -38,7 +39,10 @@ class _RecordScreenState extends State<RecordScreen> {
   Future<void> _loadUserData() async {
     User? user = _auth.currentUser;
     if (user != null) {
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
       if (userDoc.exists) {
         setState(() {
           _userHouse = userDoc['numberHouse'];
@@ -51,13 +55,17 @@ class _RecordScreenState extends State<RecordScreen> {
 
   void _updateAvailableTimes() async {
     if (_selectedDate != null && _userHouse != null && _userFloor != null) {
-      List<BookingModel> occupiedSlots = await _bookingService.getOccupiedSlots(_selectedDate!, _userHouse!, _userFloor!);
-      List<String> occupiedTimes = occupiedSlots.map((booking) => booking.time).toList();
+      List<BookingModel> occupiedSlots = await _bookingService.getOccupiedSlots(
+          _selectedDate!, _userHouse!, _userFloor!);
+      List<String> occupiedTimes =
+          occupiedSlots.map((booking) => booking.time).toList();
       setState(() {
         _selectedTime = null;
         _selectedTimeIndex = -1; // Сбрасываем выбранный индекс времени
         _availableTimes = ['14:00', '15:00', '16:00'];
-        _availableTimes = _availableTimes.where((time) => !occupiedTimes.contains(time)).toList();
+        _availableTimes = _availableTimes
+            .where((time) => !occupiedTimes.contains(time))
+            .toList();
       });
     }
   }
@@ -86,7 +94,8 @@ class _RecordScreenState extends State<RecordScreen> {
                   onItemSelected: (date) {
                     setState(() {
                       _selectedTime = null;
-                      _selectedTimeIndex = -1; // Сбрасываем выбранный индекс времени
+                      _selectedTimeIndex =
+                          -1; // Сбрасываем выбранный индекс времени
                       _selectedDate = date;
                       _updateAvailableTimes();
                     });
@@ -102,7 +111,8 @@ class _RecordScreenState extends State<RecordScreen> {
                   onItemSelected: (time) {
                     setState(() {
                       _selectedTime = time;
-                      _selectedTimeIndex = _availableTimes.indexOf(time); // Сохраняем выбранный индекс времени
+                      _selectedTimeIndex = _availableTimes
+                          .indexOf(time); // Сохраняем выбранный индекс времени
                     });
                   },
                 ),
@@ -134,7 +144,6 @@ class _RecordScreenState extends State<RecordScreen> {
                   ),
                 ],
               ),
-
               Padding(
                 padding: const EdgeInsets.all(20),
                 child: Center(
@@ -151,11 +160,16 @@ class _RecordScreenState extends State<RecordScreen> {
                         Navigator.pop(context);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Пожалуйста, выберите дату и время')),
+                          SnackBar(
+                              content:
+                                  Text('Пожалуйста, выберите дату и время')),
                         );
                       }
                     },
-                    child: const Text('Забронировать', style: TextStyle(color: Colors.black, fontSize: 18),),
+                    child: const Text(
+                      'Забронировать',
+                      style: TextStyle(color: Colors.black, fontSize: 18),
+                    ),
                   ),
                 ),
               ),
@@ -182,7 +196,8 @@ List<DateTime> generateDatesForTwoWeeks(DateTime date) {
 
   for (int i = 0; i < 14; i++) {
     DateTime currentDate = startOfWeek.add(Duration(days: i));
-    if (!isWeekend(currentDate)) {
+    if (!isWeekend(currentDate) &&
+        currentDate.isAfter(DateTime.now().subtract(Duration(days: 1)))) {
       dates.add(currentDate);
     }
   }

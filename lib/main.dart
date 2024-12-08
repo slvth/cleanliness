@@ -12,8 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 
 void main() {
-
-  runZonedGuarded(() async{
+  runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
     final app = await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform);
@@ -37,7 +36,6 @@ void main() {
     UserModel student = UserModel("Николаев", "Николай", "user3@user.ru", "123456", 1, 305);
     await _authService.saveUserData(student);*/
 
-
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String emailAdmin = "admin@admin.ru";
     String passwordAdmin = "123456";
@@ -51,11 +49,12 @@ void main() {
       print('Sign in successful');
       // Navigate to the next screen
     }
-    UserModel admin = UserModel("Давлетшина", "Аделина", "admin@admin.ru", "123456", 1, 401);
+    UserModel admin =
+        UserModel("Давлетшина", "Аделина", "admin@admin.ru", "123456", 1, 401);
     await _authService.updateUserData(admin);
 
-    runApp( CleanlinessApp());
-  }, (e, st){
+    runApp(CleanlinessApp());
+  }, (e, st) {
     print(e);
   });
 }

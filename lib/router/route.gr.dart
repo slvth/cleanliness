@@ -117,3 +117,22 @@ class RecordRoute extends PageRouteInfo<void> {
     },
   );
 }
+
+/// generated route for
+/// [SignInTestScreen]
+class SignInTestRoute extends PageRouteInfo<void> {
+  const SignInTestRoute({List<PageRouteInfo>? children})
+      : super(
+          SignInTestRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'SignInTestRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const SignInTestScreen();
+    },
+  );
+}
