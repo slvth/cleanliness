@@ -28,8 +28,6 @@ class _RecordListScreenState extends State<RecordListScreen> with RouteAware {
     super.initState();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     AuthService _authService = AuthService();
@@ -39,57 +37,65 @@ class _RecordListScreenState extends State<RecordListScreen> with RouteAware {
       body: userId == null
           ? Center(child: CircularProgressIndicator())
           : StreamBuilder<QuerySnapshot>(
-        stream: _bookingService.getUserBookings(userId),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text('Ошибка: ${snapshot.error}'));
-          }
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(child: Text('Нет бронирований'));
-          }
-          List<DocumentSnapshot> documents = snapshot.data!.docs;
-          return ListView.builder(
-            itemCount: documents.length,
-            itemBuilder: (context, index) {
-              BookingModel booking = BookingModel.fromMap(documents[index].data() as Map<String, dynamic>);
-              return FutureBuilder<UserModel>(
-                future: fetchUser(booking.userId),
-                builder: (context, userSnapshot) {
-                  if (userSnapshot.connectionState == ConnectionState.waiting) {
-                    return ListTile(
-                      leading: CircularProgressIndicator(),
-                      title: Text('Загрузка пользователя...'),
-                    );
-                  } else if (userSnapshot.hasError) {
-                    return ListTile(
-                      title: Text('Ошибка: ${userSnapshot.error}'),
-                    );
-                  } else if (!userSnapshot.hasData) {
-                    return ListTile(
-                      title: Text('Пользователь не найден.'),
-                    );
-                  } else {
-                    UserModel user = userSnapshot.data!;
-                    return RecordTile(
-                      booking: booking,
-                      user: user,
-                      onCancel: () {
-                        _bookingService.cancelBooking(documents[index].id);
+              stream: _bookingService.getUserBookings(userId),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(child: Text('Ошибка: ${snapshot.error}'));
+                }
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return Center(child: Text('Нет бронирований'));
+                }
+                List<DocumentSnapshot> documents = snapshot.data!.docs;
+                return ListView.builder(
+                  itemCount: documents.length,
+                  itemBuilder: (context, index) {
+                    BookingModel booking = BookingModel.fromMap(
+                        documents[index].data() as Map<String, dynamic>);
+                    return FutureBuilder<UserModel>(
+                      future: fetchUser(booking.userId),
+                      builder: (context, userSnapshot) {
+                        if (userSnapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return ListTile(
+                            leading: CircularProgressIndicator(),
+                            title: Text('Загрузка пользователя...'),
+                          );
+                        } else if (userSnapshot.hasError) {
+                          return ListTile(
+                            title: Text('Ошибка: ${userSnapshot.error}'),
+                          );
+                        } else if (!userSnapshot.hasData) {
+                          return ListTile(
+                            title: Text('Пользователь не найден.'),
+                          );
+                        } else {
+                          UserModel user = userSnapshot.data!;
+                          return RecordTile(
+                            booking: booking,
+                            user: user,
+                            onCancel: () {
+                              _bookingService
+                                  .cancelBooking(documents[index].id);
+                            },
+                            isLastItem: index == documents.length - 1,
+                          );
+                        }
                       },
                     );
-                  }
-                },
-              );
-            },
-          );
-        },
-      ),
+                  },
+                );
+              },
+            ),
       floatingActionButton: FloatingActionButton(
+        //backgroundColor: const Color.fromRGBO(10, 163, 115, 1.0),
+        backgroundColor: const Color.fromRGBO(3, 142, 99, 1.0),
+        foregroundColor: Colors.white,
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => RecordScreen()));
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => RecordScreen()));
         },
         child: Icon(Icons.add),
       ),
@@ -97,7 +103,8 @@ class _RecordListScreenState extends State<RecordListScreen> with RouteAware {
   }
 
   Future<UserModel> fetchUser(String userId) async {
-    DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    DocumentSnapshot userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
     return UserModel.fromFirestore(userDoc);
   }
 }

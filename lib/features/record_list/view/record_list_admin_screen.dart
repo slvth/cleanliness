@@ -35,7 +35,7 @@ class _RecordListAdminScreenState extends State<RecordListAdminScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Бронирования')),
+      appBar: AppBar(title: Text('Бронирования студентов')),
       body: userId == null
           ? Center(child: CircularProgressIndicator())
           : StreamBuilder<List<DocumentSnapshot>>(stream: _bookingService.getAllBookings2(), builder: (context, snapshot){

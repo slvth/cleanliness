@@ -28,59 +28,73 @@ class _SignInTestScreenState extends State<SignInTestScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
-                onPressed: () async {
-                  String email = "user3@user.ru";
-                  String password = "123456";
-                  User? user = await _authService.signIn(email, password);
-                  final SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
-                  if (user == null) {
-                    print('Sign in failed');
-                    // Show error message to the user
-                  } else {
-                    prefs.setString("user_id", user.uid);
-                    print('Sign in successful');
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => RecordListScreen()));
-                    // Navigate to the next screen
-                    UserModel student = UserModel("Николаев", "Николай",
-                        "user3@user.ru", "123456", 1, 305);
-                    await _authService.saveUserData(student);
-                  }
-                },
-                child: Text(
-                  'студент',
-                  style: TextStyle(color: Colors.black, fontSize: 18),
-                )),
-            ElevatedButton(
-                onPressed: () async {
-                  String emailAdmin = "admin@admin.ru";
-                  String passwordAdmin = "123456";
-                  User? user2 =
-                      await _authService.signIn(emailAdmin, passwordAdmin);
+            // Добавляем иконку стиральной машины
+            Image.asset(
+              "assets/washer_logo.png",
+              fit: BoxFit.cover,
+              width: 100,
+              height: 100,
+            ),
+            SizedBox(height: 50), // Пространство между иконкой и кнопками
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+              child: ElevatedButton(
+                  onPressed: () async {
+                    String email = "user3@user.ru";
+                    String password = "123456";
+                    User? user = await _authService.signIn(email, password);
+                    final SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    if (user == null) {
+                      print('Sign in failed');
+                      // Show error message to the user
+                    } else {
+                      prefs.setString("user_id", user.uid);
+                      print('Sign in successful');
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => RecordListScreen()));
+                      // Navigate to the next screen
+                      UserModel student = UserModel("Николаев", "Николай",
+                          "user3@user.ru", "123456", 1, 305);
+                      await _authService.saveUserData(student);
+                    }
+                  },
+                  child: Text(
+                    'студент',
+                    //style: TextStyle(color: Colors.black, fontSize: 18),
+                  )),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+              child: ElevatedButton(
+                  onPressed: () async {
+                    String emailAdmin = "admin@admin.ru";
+                    String passwordAdmin = "123456";
+                    User? user2 =
+                        await _authService.signIn(emailAdmin, passwordAdmin);
 
-                  final SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
-                  if (user2 == null) {
-                    print('Sign in failed');
-                    // Show error message to the user
-                  } else {
-                    prefs.setString("user_id", user2.uid);
-                    print('Sign in successful');
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => RecordListAdminScreen()));
-                    // Navigate to the next screen
-                  }
-                },
-                child: Text(
-                  'админ',
-                  style: TextStyle(color: Colors.black, fontSize: 18),
-                )),
+                    final SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    if (user2 == null) {
+                      print('Sign in failed');
+                      // Show error message to the user
+                    } else {
+                      prefs.setString("user_id", user2.uid);
+                      print('Sign in successful');
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => RecordListAdminScreen()));
+                      // Navigate to the next screen
+                    }
+                  },
+                  child: Text(
+                    'админ',
+                    //style: TextStyle(color: Colors.black, fontSize: 18),
+                  )),
+            ),
           ],
         ),
       ),

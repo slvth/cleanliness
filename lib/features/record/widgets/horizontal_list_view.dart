@@ -7,7 +7,8 @@ class HorizontalListView extends StatefulWidget {
   const HorizontalListView({
     super.key,
     required this.items,
-    this.onItemSelected, required this.selectIndex,
+    this.onItemSelected,
+    required this.selectIndex,
   });
 
   @override
@@ -38,9 +39,17 @@ class _HorizontalListViewState extends State<HorizontalListView> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
             ),
-            color: (_indexSelect == i && _indexSelect != -1  && widget.selectIndex!=-1) ? Colors.black : Colors.grey, // Изменение цвета в зависимости от выбранного элемента
+            //color: (_indexSelect == i && _indexSelect != -1  && widget.selectIndex!=-1) ? Colors.black : Colors.grey, // Изменение цвета в зависимости от выбранного элемента
+            // Изменение цвета в зависимости от выбранного элемента
+            color: (_indexSelect == i &&
+                    _indexSelect != -1 &&
+                    widget.selectIndex != -1)
+                ? const Color.fromRGBO(10, 163, 115, 1.0)
+                //: const Color.fromRGBO(144, 205, 179, 1.0),
+                //: const Color.fromRGBO(149, 223, 187, 1.0),
+                : const Color.fromRGBO(164, 227, 200, 1.0),
             child: SizedBox(
-              width: 100,
+              width: 110,
               child: Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -48,7 +57,13 @@ class _HorizontalListViewState extends State<HorizontalListView> {
                     Text(
                       widget.items[i],
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white.withOpacity(1)),
+                      style: TextStyle(
+                          fontSize: 18,
+                          color: (_indexSelect == i &&
+                                  _indexSelect != -1 &&
+                                  widget.selectIndex != -1)
+                              ? Colors.white
+                              : Colors.black),
                     ),
                   ],
                 ),
@@ -60,4 +75,3 @@ class _HorizontalListViewState extends State<HorizontalListView> {
     );
   }
 }
-

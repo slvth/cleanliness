@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../repositories/firebase/BookingService.dart';
 import '../../../repositories/models/models.dart';
+import '../../../theme/theme.dart';
 import '../widgets/widgets.dart';
 
 @RoutePage()
@@ -75,53 +76,71 @@ class _RecordScreenState extends State<RecordScreen> {
     final _startOfWeek = getStartOfWeek(DateTime.now());
     final _generateDatesForTwoWeeks = generateDatesForTwoWeeks(_startOfWeek);
     final _datesToString = datesToString(_generateDatesForTwoWeeks);
+    final theme = Theme.of(context);
 
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Чи100та в Кампусе'),
+      appBar: AppBar(
+        title: const Text(
+          'Запись на стирку',
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Выберите дату:'),
-              SizedBox(
-                height: 100,
-                child: HorizontalListView(
-                  items: _datesToString,
-                  selectIndex: -2,
-                  onItemSelected: (date) {
-                    setState(() {
-                      _selectedTime = null;
-                      _selectedTimeIndex =
-                          -1; // Сбрасываем выбранный индекс времени
-                      _selectedDate = date;
-                      _updateAvailableTimes();
-                    });
-                  },
-                ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Выберите дату:',
+              style: defaultTheme.textTheme.labelSmall,
+            ),
+            SizedBox(
+              height: 100,
+              child: HorizontalListView(
+                items: _datesToString,
+                selectIndex: -2,
+                onItemSelected: (date) {
+                  setState(() {
+                    _selectedTime = null;
+                    _selectedTimeIndex =
+                        -1; // Сбрасываем выбранный индекс времени
+                    _selectedDate = date;
+                    _updateAvailableTimes();
+                  });
+                },
               ),
-              const Text('Выберите время:'),
-              SizedBox(
-                height: 50,
-                child: HorizontalListView(
-                  items: _availableTimes,
-                  selectIndex: _selectedTimeIndex,
-                  onItemSelected: (time) {
+            ),
+            const SizedBox(height: 10),
+            const Text('Выберите время:'),
+            SizedBox(
+              height: 50,
+              child: HorizontalListView(
+                items: _availableTimes,
+                selectIndex: _selectedTimeIndex,
+                onItemSelected: (time) {
+                  if (_availableTimes.contains(time)) {
+                    // Проверяем, доступно ли время
                     setState(() {
                       _selectedTime = time;
                       _selectedTimeIndex = _availableTimes
                           .indexOf(time); // Сохраняем выбранный индекс времени
                     });
-                  },
-                ),
+                  } else {
+                    // Если время недоступно, показываем сообщение
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Время $time уже занято')),
+                    );
+                  }
+                },
               ),
-              const Text('Количество стиральных машин:'),
-              Column(
+            ),
+            const SizedBox(height: 10),
+            const Text('Количество стиральных машин:'),
+            Expanded(
+              // Обернули в Expanded, чтобы занять доступное пространство
+              child: Column(
                 children: [
                   RadioListTile(
-                    activeColor: Colors.black,
+                    activeColor: const Color.fromRGBO(3, 142, 99, 1.0),
                     value: 1,
                     groupValue: _currentValueRadio,
                     onChanged: (value) {
@@ -129,10 +148,10 @@ class _RecordScreenState extends State<RecordScreen> {
                         _currentValueRadio = value!;
                       });
                     },
-                    title: const Text('1 машина'),
+                    title: Text('1 машина'),
                   ),
                   RadioListTile(
-                    activeColor: Colors.black,
+                    activeColor: const Color.fromRGBO(3, 142, 99, 1.0),
                     value: 2,
                     groupValue: _currentValueRadio,
                     onChanged: (value) {
@@ -144,9 +163,12 @@ class _RecordScreenState extends State<RecordScreen> {
                   ),
                 ],
               ),
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Center(
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Center(
+                child: SizedBox(
+                  width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
                       if (_selectedDate != null && _selectedTime != null) {
@@ -168,14 +190,16 @@ class _RecordScreenState extends State<RecordScreen> {
                     },
                     child: const Text(
                       'Забронировать',
-                      style: TextStyle(color: Colors.black, fontSize: 18),
+                      style: TextStyle(color: Colors.white, fontSize: 20),
                     ),
                   ),
                 ),
               ),
-            ],
-          ),
-        ));
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
